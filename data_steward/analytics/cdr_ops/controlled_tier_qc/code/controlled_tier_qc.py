@@ -1,5 +1,6 @@
 # for data manipulation
-import pandas as pd 
+import pandas as pd
+from collections import defaultdict
 
 # Path
 from code.config import (CSV_FOLDER, FIELD_CSV_FILE, CONCEPT_CSV_FILE, TABLE_CSV_FILE, 
@@ -21,6 +22,40 @@ from sql.query_templates import (QUERY_SUPPRESSED_NULLABLE_FIELD_NOT_NULL,
 # helper functions for violation counts
 from utils.helpers import (load_dataframe_for_rule, get_table_violation_counts, get_field_violation_counts, 
                         get_field_violation_counts, get_mapping_violation_counts)
+
+
+def run_check_based_on_file(csv_file, dict_result, project_id, post_deid_dataset, pre_deid_dataset=None):
+    checks_df = load_dataframe_for_rule(CSV_FOLDER/csv_file)
+    rule_codes = checks_df['rule'].unique()
+    for rule in rule_codes:
+        if csv_file == TABLE_CSV_FILE:
+            df = Table_Suppression_Check(project_id, post_deid_dataset, rule)._run_check()
+        if csv_file == FIELD_CSV_FILE:
+            df = Field_Suppression_Check(project_id, post_deid_dataset, rule)._run_check()
+        if csv_file == CONCEPT_CSV_FILE:
+            df = Concept_Suppression_Check(project_id, post_deid_dataset, rule)._run_check()
+        if csv_file == MAPPING_CSV_FILE:
+            df = Mapping_Check(project_id, post_deid_dataset, pre_deid_dataset, rule)
+        dict_result[rule] = df
+    return dict_result
+
+
+def run_all_checks(project_id, post_deid_dataset, pre_deid_dataset=None):
+    result_checks = defaultdict()
+    # Table checks
+    result_checks = run_check_based_on_file(TABLE_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
+    
+    # Field Checks
+    result_checks = run_check_based_on_file(FIELD_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
+
+    # Concept Checks
+    result_checks = run_check_based_on_file(CONCEPT_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
+
+    # TODO Mapping checks
+
+    return result_checks
+
+
 
 
 class Check():
