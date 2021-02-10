@@ -41,7 +41,7 @@ def run_check_based_on_file(csv_file:str, dict_result:dict, project_id:str, post
 
 
 def run_all_checks(project_id:str, post_deid_dataset:str, pre_deid_dataset:str=None) -> dict:
-    result_checks = defaultdict()
+    result_checks = defaultdict(list)
     # Table checks
     result_checks = run_check_based_on_file(TABLE_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
     
@@ -49,7 +49,7 @@ def run_all_checks(project_id:str, post_deid_dataset:str, pre_deid_dataset:str=N
     result_checks = run_check_based_on_file(FIELD_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
 
     # Concept Checks
-    result_checks = run_check_based_on_file(CONCEPT_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
+    # result_checks = run_check_based_on_file(CONCEPT_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
 
     # TODO Mapping checks
 
@@ -58,11 +58,11 @@ def run_all_checks(project_id:str, post_deid_dataset:str, pre_deid_dataset:str=N
 
 def display_summary_checks(result_checks):
     check_list = []
-    for rule, df in rule_checks.items():
-        check_dict = {'rule': rule, 'has violation': len(df) > 0}
+    for rule, df in result_checks.items():
+        check_dict = {'rule': rule, 'has violation': len(df)}
         check_list.append(check_dict)
-    check_df = pd.DataFrame(check_df)
-    return check_df.style.applymap(lambda x: 'background-color : red' if x>0 else '')
+    check_df = pd.DataFrame(check_list)
+    return check_df.style.applymap(lambda x: 'background-color : yellow' if x>0 else '')
 
 
 class Check():
