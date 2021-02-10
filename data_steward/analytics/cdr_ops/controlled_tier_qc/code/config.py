@@ -20,6 +20,11 @@ NEEDED_COLUMNS_FOR_CONCEPT_ID_CHECK_MERGE = ['table_name', 'column_name', 'conce
 NUMERIC_DATA_TYPES = ['INT64']
 
 MAPPING_CHECK_DESCRIPTION = {
-    'data_type': 'Correct Type', 'old_id_in_output': 'Old ID not changed',
-    'new_id_not_in_map': 'New ID not in mapping', 'wrong_mapping': 'ID not properly mapped'
+    'data_type': 'Correct Type', 
+    'old_id_in_output': 'Old ID not changed',
+    'new_id_not_in_map': 'New ID not in mapping', 
+    'wrong_mapping': 'ID not properly mapped'
 }
+
+EXCLUDED_TABLES_FOR_WRONG_MAPPING_CHECK = ['person', 'heart_rate_summary', 'activity_summary',
+                'death', 'steps_intraday', 'heart_rate_minute_level']
