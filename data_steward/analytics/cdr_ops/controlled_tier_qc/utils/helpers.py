@@ -85,8 +85,7 @@ def get_mapping_violation_counts(df, template_query, project_id, pre_deid_datase
     result_df = df.copy()
     results = []
     for _, row in result_df.iterrows():
-        if check_description == MAPPING_CHECK_DESCRIPTION['wrong_mapping'] and row['table_name'] in ['person', 'heart_rate_summary', 'activity_summary',
-                'death', 'steps_intraday', 'heart_rate_minute_level']:
+        if check_description == MAPPING_CHECK_DESCRIPTION['wrong_mapping'] and row['table_name'] in EXCLUDED_TABLES_FOR_WRONG_MAPPING_CHECK:
             continue
         query = Template(template_query).render(table_name=row['table_name'], column_name=row['column_name'], 
         project_id=project_id, post_deid_dataset=post_deid_dataset, pre_deid_dataset=pre_deid_dataset)
