@@ -129,3 +129,37 @@ SELECT
     SUM(CASE WHEN output_pid != expected_pid THEN 1 ELSE 0 END) AS n_row_violation
 FROM data
 """
+
+# """
+# Motor vehicle accident ICD9 reference should be removed
+# """
+QUERY_VEHICLE_ACCIDENT_ICD9_SUPPRESSION = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE  REGEXP_CONTAINS(concept_code, r"^E8[0-4][0-9]")
+    AND NOT REGEXP_CONTAINS(concept_code, r"E8[0-4][0-9][\d]")
+)
+"""
+
+# """
+# Motor vehicle accident ICD10 reference should be removed
+# """
+QUERY_VEHICLE_ACCIDENT_ICD10_SUPPRESSION = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE  REGEXP_CONTAINS(concept_code, r"^V")
+    AND REGEXP_CONTAINS(vocabulary_id, r"^ICD10")
+)
+"""
