@@ -35,6 +35,9 @@ drug_exposure,lot_number,STRING,YES,YES,DC-1370
 note,note_title,STRING,NO,YES,DC-1370
 note,note_text,STRING,NO,YES,DC-1370
 cost,cost_domain_id,STRING,NO,YES,DC-1370
+person,month_of_birth,INT64,YES,YES,DC-1357
+person,day_of_birth,INT64,YES,YES,DC-1357
+person,birth_datetime,TIMESTAMP,YES,YES,DC-1357
 person,month_of_birth,INT64,YES,YES,DC-1373
 person,day_of_birth,INT64,YES,YES,DC-1373
 person,birth_datetime,TIMESTAMP,YES,YES,DC-1373
