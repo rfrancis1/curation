@@ -12,9 +12,11 @@ from code.config import (CSV_FOLDER, FIELD_CSV_FILE, CONCEPT_CSV_FILE, TABLE_CSV
 from jinja2 import Template
 
 
-def load_dataframe_for_rule(data_path:str, rule_code:str) -> pd.DataFrame:
+def load_dataframe_for_rule(data_path:str, rule_code:str=None) -> pd.DataFrame:
     df = pd.read_csv(data_path, dtype='object')
-    return df[df['rule'] == rule_code]
+    if rule_code:
+        df = df[df['rule'] == rule_code]
+    return df
 
 
 def get_field_violation_counts(df:pd.DataFrame, template_query:str, project_id:str, dataset:str, needed_cols:list) -> pd.DataFrame:
@@ -97,3 +99,5 @@ def get_mapping_violation_counts(df, template_query, project_id, pre_deid_datase
     if check_description:
         result_df['check_description'] = check_description
     return result_df[result_df[COLUMN_VIOLATION] > 0]
+
+
