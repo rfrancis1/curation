@@ -27,7 +27,7 @@ def get_field_violation_counts(df:pd.DataFrame, template_query:str, project_id:s
     results = []
     for _, row in result_df.iterrows():
         query = Template(template_query).render(table_name=row['table_name'], column_name=row['column_name'], 
-            project_id=project_id, dataset=dataset)
+            project_id=project_id, post_deid_dataset=dataset)
         result = pd.read_gbq(query)
         results.append(result)
     all_results = pd.concat(results)
