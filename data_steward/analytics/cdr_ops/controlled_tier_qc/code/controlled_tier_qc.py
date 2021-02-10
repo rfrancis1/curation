@@ -59,10 +59,10 @@ def run_all_checks(project_id:str, post_deid_dataset:str, pre_deid_dataset:str=N
 def display_summary_checks(result_checks):
     check_list = []
     for rule, df in result_checks.items():
-        check_dict = {'rule': rule, 'has violation': len(df)}
-        check_list.append(check_dict)
-    check_df = pd.DataFrame(check_list)
-    return check_df.style.applymap(lambda x: 'background-color : yellow' if x>0 else '')
+        result = df.groupby('rule')['n_row_violation'].sum().reset_index()
+        check_list.append(result)
+    check_df = pd.concat(check_list).reset_index(drop=True)
+    return check_df.style.applymap(lambda x: 'background-color:yellow' if isinstance(x, int) and x>0 else '')
 
 
 class Check():
