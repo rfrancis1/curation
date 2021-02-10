@@ -24,7 +24,7 @@ from utils.helpers import (load_dataframe_for_rule, get_table_violation_counts, 
                         get_field_violation_counts, get_mapping_violation_counts)
 
 
-def run_check_based_on_file(csv_file, dict_result, project_id, post_deid_dataset, pre_deid_dataset=None):
+def run_check_based_on_file(csv_file:str, dict_result:dict, project_id:str, post_deid_dataset:str, pre_deid_dataset:str=None) -> dict:
     checks_df = load_dataframe_for_rule(CSV_FOLDER/csv_file)
     rule_codes = checks_df['rule'].unique()
     for rule in rule_codes:
@@ -40,7 +40,7 @@ def run_check_based_on_file(csv_file, dict_result, project_id, post_deid_dataset
     return dict_result
 
 
-def run_all_checks(project_id, post_deid_dataset, pre_deid_dataset=None):
+def run_all_checks(project_id:str, post_deid_dataset:str, pre_deid_dataset:str=None) -> dict:
     result_checks = defaultdict()
     # Table checks
     result_checks = run_check_based_on_file(TABLE_CSV_FILE, result_checks, project_id, post_deid_dataset, pre_deid_dataset)
@@ -56,6 +56,13 @@ def run_all_checks(project_id, post_deid_dataset, pre_deid_dataset=None):
     return result_checks
 
 
+def display_summary_checks(result_checks):
+    check_list = []
+    for rule, df in rule_checks.items():
+        check_dict = {'rule': rule, 'has violation': len(df) > 0}
+        check_list.append(check_dict)
+    check_df = pd.DataFrame(check_df)
+    return check_df.style.applymap(lambda x: 'background-color : red' if x>0 else '')
 
 
 class Check():
