@@ -1,0 +1,16 @@
+rule,level,name,description
+DC-1370,Field,,Verify string type field suppression
+DC-1377,Mapping,,Verify all zip code values are generalized
+DC-1346,Mapping,,Verify PID to RID ran
+DC-1348,Mapping,,Verify Questionnare_response_id mapping ran
+DC-1355,Mapping,,Verify site id mappings ran
+DC-1357,Field,,Verify person table does not contain birth info
+DC-1359,Concept,,Verify Observation table does not have survey birth info
+DC-1362,Table,,Verify table suppression
+DC-1364,Concept,,Verify Explicit identifier record suppression
+DC-1366,Concept,,Verify Race/Ethnicity record suppression
+DC-1368,,,
+DC-1373,Field,,Verify identifying field suppression works
+DC-1380,,,
+DC-1382,,,
+DC-1388,,,

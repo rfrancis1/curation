@@ -1,102 +1,73 @@
-# for data manipulation
-import pandas as pd 
-
-# Path
-from code.config import (CSV_FOLDER, FIELD_CSV_FILE, CONCEPT_CSV_FILE, TABLE_CSV_FILE, 
-                        MAPPING_CSV_FILE, COLUMN_VIOLATION,
-                    NEEDED_COLUMNS_FROM_CONCEPT_CHECK, NEEDED_COLUMNS_FROM_FIELD_CHECK, NUMERIC_DATA_TYPES,
-                    NEEDED_COLUMNS_FOR_CONCEPT_CODE_CHECK_MERGE, NEEDED_COLUMNS_FOR_CONCEPT_ID_CHECK_MERGE,
-                    NEEDED_COLUMNS_FROM_TABLE_CHECK, MAPPING_CHECK_DESCRIPTION)
-
-# SQL template
+import pandas as pd
 from jinja2 import Template
+from code.config import (CSV_FOLDER, COLUMNS_IN_CHECK_RESULT)
 
-
-def load_dataframe_for_rule(data_path:str, rule_code:str=None) -> pd.DataFrame:
-    df = pd.read_csv(data_path, dtype='object')
+def load_check_file(filename, rule_code=None):
+    check_df = pd.read_csv(CSV_FOLDER/filename, dtype='object')
     if rule_code:
-        df = df[df['rule'] == rule_code]
+        if not isinstance(rule_code, list):
+            rule_code = [rule_code]
+        check_df = check_df[check_df['rule'].isin(rule_code)]
+    return check_df
+
+def form_field_param_from_row(row, field):
+    return row[field] if field in row and row[field] != None else ''
+
+def get_list_of_common_columns_for_merge(check_df, results_df):
+    return [col for col in check_df if col in results_df]
+
+def format_cols_to_string(df):
+    df = df.copy()
+    for col in df:
+        if col == 'n_row_violation':
+            df[col] = df[col].astype(int)
+            continue
+        if df[col].dtype == 'float':
+            df[col] = df[col].astype(pd.Int64Dtype())
+        df[col] = df[col].astype(str)
     return df
 
-
-def get_field_violation_counts(df:pd.DataFrame, template_query:str, project_id:str, dataset:str, needed_cols:list) -> pd.DataFrame:
+def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid_dataset=None, mapping_issue_description=None):
     if df.empty:
-        return pd.DataFrame(columns=needed_cols)
+        return pd.DataFrame(columns=[col for col in df if col in COLUMNS_IN_CHECK_RESULT])
 
-    result_df = df.copy()
+    check_df = df.copy()
     results = []
-    for _, row in result_df.iterrows():
-        query = Template(template_query).render(table_name=row['table_name'], column_name=row['column_name'], 
-            project_id=project_id, post_deid_dataset=dataset)
-        result = pd.read_gbq(query)
-        results.append(result)
-    all_results = pd.concat(results)
-    result_df = (result_df.merge(all_results, how='left', on=['table_name', 'column_name'])
-                          .filter(items=needed_cols)
-                )
-    return result_df[result_df[COLUMN_VIOLATION] > 0]
+    for _, row in check_df.iterrows():
+        column_name = form_field_param_from_row(row, 'column_name')
+        concept_id = form_field_param_from_row(row, 'concept_id')
+        concept_code = form_field_param_from_row(row, 'concept_code')
+        data_type = form_field_param_from_row(row, 'data_type')
+        primary_key = form_field_param_from_row(row, 'primary_key')
+        mapping_table = form_field_param_from_row(row, 'mapping_table')
+        new_id = form_field_param_from_row(row, 'new_id')
+        query = Template(template_query).render(project_id=project_id, 
+                post_deid_dataset=post_deid_dataset, pre_deid_dataset=pre_deid_dataset,
+                table_name=row['table_name'],column_name=column_name,
+                concept_id=concept_id, concept_code=concept_code, data_type=data_type,
+                primary_key=primary_key, new_id=new_id, mapping_table=mapping_table)
+        result_df = pd.read_gbq(query)
+        results.append(result_df)
+    results_df = (pd.concat(results)
+                    .pipe(format_cols_to_string))
+    merge_cols = get_list_of_common_columns_for_merge(check_df, results_df)
+    result_columns = merge_cols + ['rule', 'n_row_violation']
+    final_result =  (check_df.merge(results_df, on=merge_cols, how='left')
+                            .filter(items=result_columns)
+                            .query('n_row_violation > 0')
+            )
+    if not final_result.empty and mapping_issue_description:
+        final_result['mapping_issue'] = mapping_issue_description 
+    return final_result if not final_result.empty else pd.DataFrame(columns=result_columns)
 
 
-def get_concept_violation_counts(df:pd.DataFrame, template_query:str, project_id:str, dataset:str, needed_cols:list) -> pd.DataFrame:
-    if df.empty:
-        return pd.DataFrame(columns=needed_cols)
-
-    result_df = df.copy()
-    results = []
-    for _, row in result_df.iterrows():
-        if 'concept_code' in row:
-            code = row['concept_code']
-        if 'concept_id' in row:
-            code = int(row['concept_id'])
-        query = Template(template_query).render(table_name=row['table_name'], column_name=row['column_name'], code=code,
-            project_id=project_id, post_deid_dataset=dataset)
-        result = pd.read_gbq(query)
-        results.append(result)
-    all_results = pd.concat(results)
-
-    merge_cols = [col for col in result_df if col != 'rule']
-    result_df = (result_df.merge(all_results, how='left', left_on=merge_cols, right_on=['table_name', 'column_name', 'code'])
-                          .filter(items=needed_cols)
-                )
-    return result_df[result_df[COLUMN_VIOLATION] > 0]
-
-
-def get_table_violation_counts(df:pd.DataFrame, template_query:str, project_id:str, dataset:str, needed_cols:list) -> pd.DataFrame:
-    if df.empty:
-        return pd.DataFrame(columns=needed_cols)
-
-    result_df = df.copy()
-    results = []
-    for _, row in result_df.iterrows():
-        query = Template(template_query).render(table_name=row['table_name'], project_id=project_id, post_deid_dataset=dataset)
-        result = pd.read_gbq(query)
-        results.append(result)
-    all_results = pd.concat(results)
-    result_df = (result_df.merge(all_results, how='left', on=['table_name'])
-                          .filter(items=needed_cols)
-                )
-    return result_df[result_df[COLUMN_VIOLATION] > 0]
-
-
-def get_mapping_violation_counts(df, template_query, project_id, pre_deid_dataset, post_deid_dataset, needed_cols, check_description=None):
-    if df.empty:
-        return pd.DataFrame(columns=needed_cols)
-
-    result_df = df.copy()
-    results = []
-    for _, row in result_df.iterrows():
-        if check_description == MAPPING_CHECK_DESCRIPTION['wrong_mapping'] and row['table_name'] in EXCLUDED_TABLES_FOR_WRONG_MAPPING_CHECK:
-            continue
-        query = Template(template_query).render(table_name=row['table_name'], column_name=row['column_name'], 
-        project_id=project_id, post_deid_dataset=post_deid_dataset, pre_deid_dataset=pre_deid_dataset)
-        result = pd.read_gbq(query)
-        results.append(result)
-    all_results = pd.concat(results)
-    result_df = (result_df.merge(all_results, how='left', on=['table_name', 'column_name'])
-                          .filter(items=needed_cols)
-                )
-    if check_description:
-        result_df['check_description'] = check_description
-    return result_df[result_df[COLUMN_VIOLATION] > 0]
-
-
+def highlight(row):
+    '''
+    highlight the maximum in a Series yellow.
+    '''
+    s = row['n_row_violation']
+    if s > 0:
+        css = 'background-color: red'
+    else:
+        css = ''
+    return [css] * len(row)

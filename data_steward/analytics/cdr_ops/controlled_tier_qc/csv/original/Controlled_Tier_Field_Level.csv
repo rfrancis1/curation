@@ -58,6 +58,3 @@ condition_occurrence,provider_id,INT64,YES,YES,DC-1373
 drug_exposure,provider_id,INT64,YES,YES,DC-1373
 note,provider_id,INT64,YES,YES,DC-1373
 provider_ext,provider_id,INT64,YES,YES,DC-1373
-person,month_of_birth,INT64,YES,YES,DC-1357
-person,day_of_birth,INT64,YES,YES,DC-1357
-person,birth_datetime,TIMESTAMP,YES,YES,DC-1357
