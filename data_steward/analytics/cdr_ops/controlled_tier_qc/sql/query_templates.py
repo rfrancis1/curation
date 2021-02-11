@@ -131,3 +131,63 @@ SELECT
     SUM(CASE WHEN output_pid != expected_pid THEN 1 ELSE 0 END) AS n_row_violation
 FROM data
 """
+
+
+
+QUERY_VEHICLE_ACCIDENT_SUPPRESSION_ICD9 = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE REGEXP_CONTAINS(concept_code, r"^E8[0-4][0-9]")
+    AND NOT REGEXP_CONTAINS(concept_code, r"E8[0-4][0-9][\d]")
+)
+"""
+
+QUERY_VEHICLE_ACCIDENT_SUPPRESSION_ICD10 = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE  REGEXP_CONTAINS(concept_code, r"^V")
+    AND REGEXP_CONTAINS(vocabulary_id, r"^ICD10")
+)
+"""
+
+QUERY_CANCER_CONCEPT_SUPPRESSION = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE  REGEXP_CONTAINS(concept_code, r'(History_WhichConditions)|(Condition_OtherCancer)|(History_AdditionalDiagnosis)|(OutsideTravel6MonthsWhere)')
+)
+"""
+
+QUERY_ZIP_CODE_GENERALIZATION = """
+WITH data AS (
+SELECT
+    LEFT(CAST(pre_deid.{{ column_name }} AS STRING), 3) AS expected_zip,
+    CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}` post_deid
+LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` pre_deid USING({{ primary_key }})
+WHERE post_deid.observation_source_concept_id IN (1585250)
+AND NOT REGEXP_CONTAINS(CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059|^102|^205|^369|^556|^692|^821|^823|^831|
+            ^878|^879|^884|^893|^063|^834|' )
+)
+SELECT
+    '{{ table_name }}' AS table_name,
+    SUM(CASE WHEN output_zip != CONCAT(expected_zip, '**') THEN 1 ELSE 0 END) AS n_row_violation
+FROM data
+"""

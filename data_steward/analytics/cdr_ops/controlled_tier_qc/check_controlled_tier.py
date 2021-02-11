@@ -75,3 +75,7 @@ display_check_detail_of_rule(checks, 'DC-1382')
 # # DC-1388: Free Text survey response are suppressed
 
 display_check_detail_of_rule(checks, 'DC-1388')
+
+
+
+

@@ -2,11 +2,11 @@ import pandas as pd
 
 from utils.helpers import (load_check_file, run_check_by_row)
 from sql.query_templates import (QUERY_ID_NOT_OF_CORRECT_TYPE, QUERY_ID_NOT_CHANGED_BY_DEID, 
-                                QUERY_ID_NOT_IN_MAPPING, QUERY_ID_NOT_MAPPED_PROPERLY)
+                                QUERY_ID_NOT_IN_MAPPING, QUERY_ID_NOT_MAPPED_PROPERLY, QUERY_ZIP_CODE_GENERALIZATION)
 
 from code.config import MAPPING_CSV_FILE
 
-def check_mapping(project_id, post_dataset_id, pre_deid_dataset, rule_code='DC-1346'):
+def check_mapping(project_id, post_dataset_id, rule_code, pre_deid_dataset):
     check_df = load_check_file(MAPPING_CSV_FILE, rule_code)
     # Correct type
     type_check = run_check_by_row(check_df, QUERY_ID_NOT_OF_CORRECT_TYPE,
@@ -25,3 +25,11 @@ def check_mapping(project_id, post_dataset_id, pre_deid_dataset, rule_code='DC-1
         project_id, post_dataset_id, pre_deid_dataset, "ID not properly mapped")
     
     return pd.concat([type_check, id_map_check, id_not_in_mapping_check, id_properly_mapped_check], sort=True)
+
+
+def check_mapping_zipcode_generalization(project_id, post_dataset_id, rule_code, pre_deid_dataset):
+    check_df = load_check_file(MAPPING_CSV_FILE, rule_code)
+    zip_check = run_check_by_row(check_df, QUERY_ZIP_CODE_GENERALIZATION,
+        project_id, post_dataset_id, pre_deid_dataset, "Zip code value generalized")
+
+    return zip_check

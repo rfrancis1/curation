@@ -9,18 +9,11 @@ from jinja2 import Template
 
 # functions for QC
 from code.check_table_suppression import check_table_suppression
-from code.check_field_suppression import check_field_suppression
+from code.check_field_suppression import check_field_suppression, check_vehicle_accident_suppression, check_concept_suppression
 from code.check_concept_suppression import check_concept_suppression
 from code.check_mapping import check_mapping
 
 from utils.helpers import load_check_file, highlight
-
-FUNC = {
-    'Table': check_table_suppression,
-    'Field': check_field_suppression,
-    'Concept': check_concept_suppression,
-    'Mapping': check_mapping
-}
 
 def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
     list_checks = load_check_file(CHECK_LIST_CSV_FILE, rule_code)
@@ -30,8 +23,7 @@ def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
     for _, row in list_checks.iterrows():
         rule = row['rule']
         check_level = row['level']
-        level_lower_case = check_level.lower()
-        check_function = FUNC.get(check_level)
+        check_function = eval(row['code'])
         df = check_function(project_id, post_deid_dataset, pre_deid_dataset, rule)
         checks.append(df)
     return pd.concat(checks, sort=True).reset_index(drop=True)

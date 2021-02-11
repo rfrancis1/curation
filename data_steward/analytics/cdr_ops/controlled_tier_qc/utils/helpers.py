@@ -32,6 +32,7 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
         return pd.DataFrame(columns=[col for col in df if col in COLUMNS_IN_CHECK_RESULT])
 
     check_df = df.copy()
+    queries = ""
     results = []
     for _, row in check_df.iterrows():
         column_name = form_field_param_from_row(row, 'column_name')
@@ -46,8 +47,11 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
                 table_name=row['table_name'],column_name=column_name,
                 concept_id=concept_id, concept_code=concept_code, data_type=data_type,
                 primary_key=primary_key, new_id=new_id, mapping_table=mapping_table)
+        print(query)
         result_df = pd.read_gbq(query)
+        print(result_df)
         results.append(result_df)
+
     results_df = (pd.concat(results)
                     .pipe(format_cols_to_string))
     merge_cols = get_list_of_common_columns_for_merge(check_df, results_df)
