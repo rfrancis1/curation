@@ -10,3 +10,5 @@ TABLE_CSV_FILE = "Controlled_Tier_Table_Level.csv"
 MAPPING_CSV_FILE = "Controlled_Tier_Mapping.csv"
 
 COLUMNS_IN_CHECK_RESULT = ['table_name', 'column_name', 'concept_id', 'concept_code', 'rule', 'n_row_violation']
+
+LIST_OF_LEVELS = ['Table', 'Field', 'Concept', 'Mapping']
