@@ -1,6 +1,6 @@
 rule,level,code,description
 DC-1370,Field,check_field_suppression,Verify string type field suppression
-DC-1377,Concept,check_concept_zipcode_generalization,Verify all zip code values are generalized
+DC-1377,Concept,check_mapping_zipcode_generalization,Verify all zip code values are generalized
 DC-1346,Mapping,check_mapping,Verify PID to RID ran
 DC-1348,Mapping,check_mapping,Verify Questionnare_response_id mapping ran
 DC-1355,Mapping,check_mapping,Verify site id mappings ran
