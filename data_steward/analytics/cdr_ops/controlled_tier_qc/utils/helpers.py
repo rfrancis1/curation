@@ -158,11 +158,7 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
             )
     if not final_result.empty and mapping_issue_description:
         final_result['mapping_issue'] = mapping_issue_description
-    if final_result.empty:
-        final_result = pd.DataFrame(columns=result_columns)
-        final_result['rule'] = check_df['rule'].unique()
-        final_result['n_row_violation'] = 0
-    return final_result
+    return final_result if not final_result.empty else pd.DataFrame(columns=result_columns)
 
 
 def highlight(row):
