@@ -28,9 +28,9 @@ def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
         rule = row['rule']
         check_level = row['level']
         check_file = check_dict.get(check_level)
-        check_df = filter_data_by_rule(rule)
+        check_df = filter_data_by_rule(check_file, rule)
         check_function = eval(row['code'])
-        df = check_function(check_df, project_id, post_deid_dataset, pre_deid_dataset, rule)
+        df = check_function(check_df, project_id, post_deid_dataset, pre_deid_dataset)
         checks.append(df)
     return pd.concat(checks, sort=True).reset_index(drop=True)
       
