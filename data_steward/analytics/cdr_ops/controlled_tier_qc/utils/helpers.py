@@ -175,7 +175,7 @@ def highlight(row):
 
     s = row['n_row_violation']
     if s > 0:
-        css = 'background-color: red'
+        css = 'background-color: yellow'
     else:
         css = ''
     return [css] * len(row)
