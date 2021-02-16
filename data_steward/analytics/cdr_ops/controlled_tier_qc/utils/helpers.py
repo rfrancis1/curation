@@ -10,6 +10,11 @@ def load_check_file(filename, rule_code=None):
         check_df = check_df[check_df['rule'].isin(rule_code)]
     return check_df
 
+def filter_data_by_rule(check_df, rule_code):
+    if not isinstance(rule_code, list):
+        rule_code = [rule_code]
+    return check_df[check_df['rule'].isin(rule_code)]
+
 def form_field_param_from_row(row, field):
     return row[field] if field in row and row[field] != None else ''
 
