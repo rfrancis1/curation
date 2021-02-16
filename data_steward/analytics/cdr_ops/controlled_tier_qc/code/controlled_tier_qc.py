@@ -13,20 +13,24 @@ from code.check_field_suppression import check_field_suppression, check_vehicle_
 from code.check_concept_suppression import check_concept_suppression
 from code.check_mapping import check_mapping
 
-from utils.helpers import load_check_file, highlight, filter_data_by_rule
+# funtions from utils
+from utils.helpers import highlight, load_tables_for_check, filter_data_by_rule
 
-from code.config import CSV_FOLDER, TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE, LIST_OF_LEVELS
 
 def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
     list_checks = load_check_file(CHECK_LIST_CSV_FILE, rule_code)
     list_checks = list_checks[list_checks['level'].notnull()].copy()
+
+    check_dict = load_tables_for_check()
     
     checks = []
     for _, row in list_checks.iterrows():
         rule = row['rule']
         check_level = row['level']
+        check_file = check_dict.get(check_level)
+        check_df = filter_data_by_rule(rule)
         check_function = eval(row['code'])
-        df = check_function(project_id, post_deid_dataset, pre_deid_dataset, rule)
+        df = check_function(check_df, project_id, post_deid_dataset, pre_deid_dataset, rule)
         checks.append(df)
     return pd.concat(checks, sort=True).reset_index(drop=True)
       

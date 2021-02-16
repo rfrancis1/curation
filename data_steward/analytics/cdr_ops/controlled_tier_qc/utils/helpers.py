@@ -1,25 +1,33 @@
 import pandas as pd
 from jinja2 import Template
-from code.config import (CSV_FOLDER, COLUMNS_IN_CHECK_RESULT)
+from code.config import (CSV_FOLDER, COLUMNS_IN_CHECK_RESULT, TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE)
 
-def load_check_file(filename, rule_code=None):
-    check_df = pd.read_csv(CSV_FOLDER/filename, dtype='object')
-    if rule_code:
-        if not isinstance(rule_code, list):
-            rule_code = [rule_code]
-        check_df = check_df[check_df['rule'].isin(rule_code)]
-    return check_df
+from collections import defaultdict
+
 
 def filter_data_by_rule(check_df, rule_code):
     if not isinstance(rule_code, list):
         rule_code = [rule_code]
     return check_df[check_df['rule'].isin(rule_code)]
 
+
+def load_tables_for_check():
+    check_dict = defaultdict()
+    list_of_files = [TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE]
+    list_of_levels = ['Table', 'Field', 'Concept', 'Mapping']
+
+    for level, filename in zip(list_of_levels, list_of_files):
+        check_dict[level]= pd.read_csv(CSV_FOLDER/filename, dtype='object')
+    return check_dict
+
+
 def form_field_param_from_row(row, field):
     return row[field] if field in row and row[field] != None else ''
 
+
 def get_list_of_common_columns_for_merge(check_df, results_df):
     return [col for col in check_df if col in results_df]
+
 
 def format_cols_to_string(df):
     df = df.copy()
@@ -31,6 +39,7 @@ def format_cols_to_string(df):
             df[col] = df[col].astype(pd.Int64Dtype())
         df[col] = df[col].astype(str)
     return df
+
 
 def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid_dataset=None, mapping_issue_description=None):
     if df.empty:
