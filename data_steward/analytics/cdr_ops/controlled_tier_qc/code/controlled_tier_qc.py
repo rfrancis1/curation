@@ -13,7 +13,9 @@ from code.check_field_suppression import check_field_suppression, check_vehicle_
 from code.check_concept_suppression import check_concept_suppression
 from code.check_mapping import check_mapping
 
-from utils.helpers import load_check_file, highlight
+from utils.helpers import load_check_file, highlight, filter_data_by_rule
+
+from code.config import CSV_FOLDER, TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE, LIST_OF_LEVELS
 
 def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
     list_checks = load_check_file(CHECK_LIST_CSV_FILE, rule_code)
