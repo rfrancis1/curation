@@ -14,11 +14,11 @@ from code.check_concept_suppression import check_concept_suppression
 from code.check_mapping import check_mapping
 
 # funtions from utils
-from utils.helpers import highlight, load_tables_for_check, filter_data_by_rule
+from utils.helpers import highlight, load_check_description, load_tables_for_check, filter_data_by_rule
 
 
 def run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=None):
-    list_checks = load_check_file(CHECK_LIST_CSV_FILE, rule_code)
+    list_checks = load_check_description(rule_code)
     list_checks = list_checks[list_checks['level'].notnull()].copy()
 
     check_dict = load_tables_for_check()

@@ -1,17 +1,57 @@
 import pandas as pd
 from jinja2 import Template
-from code.config import (CSV_FOLDER, COLUMNS_IN_CHECK_RESULT, TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE)
+from code.config import (CSV_FOLDER, COLUMNS_IN_CHECK_RESULT, TABLE_CSV_FILE, 
+                        FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE, CHECK_LIST_CSV_FILE)
 
 from collections import defaultdict
 
 
+def load_check_description(rule_code=None):
+    """Extract the csv file containing the descriptions of checks
+
+    Parameters
+    ----------
+    rule_code: str or list
+        contains all the codes to be checked
+    
+    Returns
+    -------
+    pd.DataFrame
+
+    """
+    check_df = pd.read_csv(CSV_FOLDER/CHECK_LIST_CSV_FILE, dtype='object')
+    if rule_code:
+        check_df = filter_data_by_rule(check_df, rule_code)
+    return check_df
+
+
 def filter_data_by_rule(check_df, rule_code):
+    """Filter specific check rules by using code
+    
+    Parameters
+    ----------
+    check_df: pd.DataFrame
+        contains all the checks
+    rule_code: str or list
+        contains the codes to be checked
+    
+    Returns
+    -------
+    pd.DataFrame
+
+    """
     if not isinstance(rule_code, list):
         rule_code = [rule_code]
     return check_df[check_df['rule'].isin(rule_code)]
 
 
 def load_tables_for_check():
+    """Load all the csv files for check
+    
+    Returns
+    -------
+    dict
+    """
     check_dict = defaultdict()
     list_of_files = [TABLE_CSV_FILE, FIELD_CSV_FILE, CONCEPT_CSV_FILE, MAPPING_CSV_FILE]
     list_of_levels = ['Table', 'Field', 'Concept', 'Mapping']
@@ -26,10 +66,31 @@ def form_field_param_from_row(row, field):
 
 
 def get_list_of_common_columns_for_merge(check_df, results_df):
+    """Extract common columns from two dataframes
+    
+    Parameters
+    ----------
+    check_df  :   pd.DataFrame
+    results_df:   pd.DataFrame
+
+    Returns
+    -------
+    list
+    """
     return [col for col in check_df if col in results_df]
 
 
 def format_cols_to_string(df):
+    """Format all columns (except for some) to string
+    
+    Parameters
+    ----------
+    df: pd.DataFrame
+
+    Returns
+    -------
+    pd.DataFrame
+    """
     df = df.copy()
     for col in df:
         if col == 'n_row_violation':
@@ -42,6 +103,27 @@ def format_cols_to_string(df):
 
 
 def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid_dataset=None, mapping_issue_description=None):
+    """Run all checks in a dataframe row by row
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        contains all the checks to be run
+    template_query: str
+        query template that changes according to the check
+    project_id: str
+        Google Bigquery project
+    post_deid_dataset: str
+        Bigquery dataset name after de-id was run
+    pre_deid_dataset: str
+        Bigqery dataset name before de-id was run
+    mapping_issue_description: str
+        Describes what the issue is
+
+    Returns
+    -------
+    pd.DataFrame
+    """
     if df.empty:
         return pd.DataFrame(columns=[col for col in df if col in COLUMNS_IN_CHECK_RESULT])
 
@@ -80,9 +162,13 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
 
 
 def highlight(row):
-    '''
-    highlight the maximum in a Series yellow.
-    '''
+    """Highlight if violations (row counts > 0) are found
+    
+    Parameters
+    ----------
+    row: pd.DataFrame
+    """
+
     s = row['n_row_violation']
     if s > 0:
         css = 'background-color: red'
