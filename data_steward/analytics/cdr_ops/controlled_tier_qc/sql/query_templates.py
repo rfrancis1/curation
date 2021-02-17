@@ -212,3 +212,17 @@ FROM data d
 LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }} m on d.input_zip = m.old_zip
 """
 
+QUERY_SUPPRESSED_FREE_TEXT_RESPONSE = """
+SELECT
+    '{{ table_name }}' AS table_name,
+    '{{ column_name }}' AS column_name,
+    COUNT(*) AS n_row_violation
+FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
+WHERE {{ column_name }} IN (
+    SELECT concept_id
+    FROM `{{ project_id }}.{{ post_deid_dataset }}.concept`
+    WHERE REGEXP_CONTAINS(concept_code, r"(FreeText)|(TextBox)")
+    OR concept_code = 'notes'
+)
+
+"""

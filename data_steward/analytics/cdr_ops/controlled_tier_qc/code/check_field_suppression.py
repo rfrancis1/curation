@@ -5,7 +5,7 @@ from sql.query_templates import (QUERY_SUPPRESSED_NULLABLE_FIELD_NOT_NULL,
                                 QUERY_SUPPRESSED_REQUIRED_FIELD_NOT_EMPTY,
                                 QUERY_SUPPRESSED_NUMERIC_NOT_ZERO,
                                 QUERY_VEHICLE_ACCIDENT_SUPPRESSION_ICD9, QUERY_VEHICLE_ACCIDENT_SUPPRESSION_ICD10,
-                                QUERY_CANCER_CONCEPT_SUPPRESSION)
+                                QUERY_CANCER_CONCEPT_SUPPRESSION, QUERY_SUPPRESSED_FREE_TEXT_RESPONSE)
 
 
 def check_field_suppression(check_df, project_id, post_dataset_id, pre_deid_dataset=None):
@@ -88,3 +88,9 @@ def check_cancer_concept_suppression(check_df, project_id, post_deid_dataset, pr
     cancer_concept = run_check_by_row(check_df, QUERY_CANCER_CONCEPT_SUPPRESSION,
         project_id, post_deid_dataset)
     return cancer_concept
+
+
+def check_field_freetext_response_suppression(check_df, project_id, post_deid_dataset, pre_deid_dataset=None):
+    free_text_concept = run_check_by_row(check_df, QUERY_SUPPRESSED_FREE_TEXT_RESPONSE,
+        project_id, post_deid_dataset)
+    return free_text_concept
