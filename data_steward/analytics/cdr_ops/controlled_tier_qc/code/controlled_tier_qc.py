@@ -10,7 +10,7 @@ from jinja2 import Template
 # functions for QC
 from code.check_table_suppression import check_table_suppression
 from code.check_field_suppression import (check_field_suppression, check_vehicle_accident_suppression,
-                 check_cancer_concept_suppression)
+                 check_field_cancer_concept_suppression)
 from code.check_concept_suppression import check_concept_suppression
 from code.check_mapping import check_mapping, check_mapping_zipcode_generalization
 

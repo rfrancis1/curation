@@ -67,7 +67,7 @@ def check_vehicle_accident_suppression(check_df, project_id, post_deid_dataset, 
     return pd.concat([icd9_vehicle_accident, icd10_vehicle_accident], sort=True)
 
 
-def check_cancer_concept_suppression(check_df, project_id, post_deid_dataset, pre_deid_dataset=None):
+def check_field_cancer_concept_suppression(check_df, project_id, post_deid_dataset, pre_deid_dataset=None):
     """Run suppression check for some cancer concepts
     
     Parameters
