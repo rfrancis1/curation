@@ -64,7 +64,10 @@ def check_mapping_zipcode_generalization(check_df, project_id, post_dataset_id, 
     zip_check = run_check_by_row(check_df, QUERY_ZIP_CODE_GENERALIZATION,
         project_id, post_dataset_id, pre_deid_dataset, "Zip code value generalized")
     
+    return zip_check
+
+def check_mapping_zipcode_transformation(check_df, project_id, post_dataset_id, pre_deid_dataset):
     zip_transformation = run_check_by_row(check_df, QUERY_ZIP_CODE_TRANSFORMATION,
         project_id, post_dataset_id, pre_deid_dataset, "Zip code value transformed")
 
-    return pd.concat([zip_check, zip_transformation], sort=True)
+    return zip_transformation

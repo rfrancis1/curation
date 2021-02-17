@@ -12,7 +12,7 @@ from code.check_table_suppression import check_table_suppression
 from code.check_field_suppression import (check_field_suppression, check_vehicle_accident_suppression,
                  check_field_cancer_concept_suppression, check_field_freetext_response_suppression)
 from code.check_concept_suppression import check_concept_suppression
-from code.check_mapping import check_mapping, check_mapping_zipcode_generalization
+from code.check_mapping import check_mapping, check_mapping_zipcode_generalization, check_mapping_zipcode_transformation
 
 # funtions from utils
 from utils.helpers import highlight, load_check_description, load_tables_for_check, filter_data_by_rule
