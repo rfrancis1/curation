@@ -2,7 +2,8 @@ import pandas as pd
 
 from utils.helpers import run_check_by_row
 from sql.query_templates import (QUERY_ID_NOT_OF_CORRECT_TYPE, QUERY_ID_NOT_CHANGED_BY_DEID, 
-                                QUERY_ID_NOT_IN_MAPPING, QUERY_ID_NOT_MAPPED_PROPERLY, QUERY_ZIP_CODE_GENERALIZATION)
+                                QUERY_ID_NOT_IN_MAPPING, QUERY_ID_NOT_MAPPED_PROPERLY, 
+                                QUERY_ZIP_CODE_GENERALIZATION, QUERY_ZIP_CODE_TRANSFORMATION)
 
 
 def check_mapping(check_df, project_id, post_dataset_id, pre_deid_dataset):
@@ -62,5 +63,8 @@ def check_mapping_zipcode_generalization(check_df, project_id, post_dataset_id, 
     """
     zip_check = run_check_by_row(check_df, QUERY_ZIP_CODE_GENERALIZATION,
         project_id, post_dataset_id, pre_deid_dataset, "Zip code value generalized")
+    
+    zip_transformation = run_check_by_row(check_df, QUERY_ZIP_CODE_TRANSFORMATION,
+        project_id, post_dataset_id, pre_deid_dataset, "Zip code value transformed")
 
-    return zip_check
+    return pd.concat([zip_check, zip_transformation], sort=True)
