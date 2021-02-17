@@ -224,5 +224,4 @@ WHERE {{ column_name }} IN (
     WHERE REGEXP_CONTAINS(concept_code, r"(FreeText)|(TextBox)")
     OR concept_code = 'notes'
 )
-
 """
