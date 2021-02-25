@@ -178,17 +178,16 @@ WHERE {{ column_name }} IN (
 QUERY_ZIP_CODE_GENERALIZATION = """
 WITH data AS (
 SELECT
-    LEFT(CAST(pre_deid.{{ column_name }} AS STRING), 3) AS expected_zip,
-    CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
+    LEFT(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), 3) AS expected_zip,
+    SAFE_CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
 FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}` post_deid
 LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` pre_deid USING({{ primary_key }})
 WHERE post_deid.observation_source_concept_id IN (1585250)
-AND NOT REGEXP_CONTAINS(CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059|^102|^205|^369|^556|^692|^821|^823|^831|
-            ^878|^879|^884|^893|^063|^834|' )
+AND NOT REGEXP_CONTAINS(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059|^102|^205|^369|^556|^692|^821|^823|^831|^878|^879|^884|^893|^063|^834' )
 )
 SELECT
     '{{ table_name }}' AS table_name,
-    SUM(CASE WHEN output_zip != CONCAT(expected_zip, '**') THEN 1 ELSE 0 END) AS n_row_violation
+    IFNULL(SUM(CASE WHEN output_zip != CONCAT(expected_zip, '**') THEN 1 ELSE 0 END), 0) AS n_row_violation
 FROM data
 """
 
@@ -197,19 +196,18 @@ FROM data
 QUERY_ZIP_CODE_TRANSFORMATION = """
 WITH data AS (
 SELECT
-    CONCAT(LEFT(CAST(pre_deid.{{ column_name }} AS STRING), 3), '**') AS input_zip,
-    CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
+    CONCAT(LEFT(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), 3), '**') AS input_zip,
+    SAFE_CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
 FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}` post_deid
 LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` pre_deid USING({{ primary_key }})
 WHERE post_deid.observation_source_concept_id IN (1585250)
-AND REGEXP_CONTAINS(CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059|^102|^205|^369|^556|^692|^821|^823|^831|
-            ^878|^879|^884|^893|^063|^834|' )
+AND REGEXP_CONTAINS(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059|^102|^205|^369|^556|^692|^821|^823|^831|^878|^879|^884|^893|^063|^834' )
 )
 SELECT
     '{{ table_name }}' AS table_name,
     SUM(CASE WHEN d.output_zip != m.new_zip THEN 1 ELSE 0 END) AS n_row_violation
 FROM data d
-LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }} m on d.input_zip = m.old_zip
+LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }}` m on d.input_zip = m.old_zip
 """
 
 QUERY_SUPPRESSED_FREE_TEXT_RESPONSE = """
