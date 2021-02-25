@@ -80,7 +80,7 @@ FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}`
 QUERY_ID_NOT_OF_CORRECT_TYPE = """
 SELECT
     table_name,
-    CASE WHEN data_type != {{ data_type }} THEN 1 ELSE 0 END AS n_row_violation
+    CASE WHEN data_type != '{{ data_type }}' THEN 1 ELSE 0 END AS n_row_violation
 FROM `{{ project_id }}.{{ post_deid_dataset }}.INFORMATION_SCHEMA.COLUMNS`
 WHERE column_name = '{{ column_name }}'
 AND table_name = '{{ table_name }}'
@@ -95,7 +95,7 @@ SELECT
     '{{ table_name }}' AS table_name,
     SUM(CASE WHEN input.{{ column_name }} = output.{{ column_name }} THEN 1 ELSE 0 END) AS n_row_violation
 FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}` output
-JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` input USING {{ primary_key }}
+JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` input USING({{ primary_key }})
 """
 
 # """
