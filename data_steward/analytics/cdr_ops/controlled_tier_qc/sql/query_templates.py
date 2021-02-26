@@ -93,7 +93,7 @@ AND table_name = '{{ table_name }}'
 QUERY_ID_NOT_CHANGED_BY_DEID = """
 SELECT
     '{{ table_name }}' AS table_name,
-    SUM(CASE WHEN input.{{ column_name }} = output.{{ column_name }} THEN 1 ELSE 0 END) AS n_row_violation
+    IFNULL(SUM(CASE WHEN input.{{ column_name }} = output.{{ column_name }} THEN 1 ELSE 0 END), 0) AS n_row_violation
 FROM `{{ project_id }}.{{ post_deid_dataset }}.{{ table_name }}` output
 JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ table_name }}` input USING({{ primary_key }})
 """
@@ -128,7 +128,7 @@ LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }}` map ON p
 )
 SELECT
     '{{ table_name }}' AS table_name,
-    SUM(CASE WHEN output_pid != expected_pid THEN 1 ELSE 0 END) AS n_row_violation
+    IFNULL(SUM(CASE WHEN output_pid != expected_pid THEN 1 ELSE 0 END), 0) AS n_row_violation
 FROM data
 """
 
@@ -205,7 +205,7 @@ AND REGEXP_CONTAINS(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), r'^036|^059
 )
 SELECT
     '{{ table_name }}' AS table_name,
-    SUM(CASE WHEN d.output_zip != m.new_zip THEN 1 ELSE 0 END) AS n_row_violation
+    IFNULL(SUM(CASE WHEN d.output_zip != m.new_zip THEN 1 ELSE 0 END), 0) AS n_row_violation
 FROM data d
 LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }}` m on d.input_zip = m.old_zip
 """
