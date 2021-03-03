@@ -194,7 +194,25 @@ FROM data
 # TODO: needs to create mapping_table in bigquery with columns old_zip and new_zip
 # Then add the name of the mapping table in mapping.csv
 QUERY_ZIP_CODE_TRANSFORMATION = """
-WITH data AS (
+WITH zip AS (
+  SELECT ARRAY<STRUCT<old_zip string, new_zip string>>
+      [('036**', '035**'),
+       ('059**', '058**'),
+       ('102**', '203**'),
+       ('205**', '368**'),
+       ('369**', '557**'),
+       ('556**', '691**'),
+       ('692**', '820**'),
+       ('821**', '822**'),
+       ('823**', '830**'),
+       ('878**', '877**'),
+       ('879**', '880**'),
+       ('884**', '883**'),
+       ('893**', '894**'),
+       ('063**', '062**'),
+       ('834**', '833**')] col
+),
+data AS (
 SELECT
     CONCAT(LEFT(SAFE_CAST(pre_deid.{{ column_name }} AS STRING), 3), '**') AS input_zip,
     SAFE_CAST(post_deid.{{ column_name }} AS STRING) AS output_zip
@@ -207,7 +225,7 @@ SELECT
     '{{ table_name }}' AS table_name,
     IFNULL(SUM(CASE WHEN d.output_zip != m.new_zip THEN 1 ELSE 0 END), 0) AS n_row_violation
 FROM data d
-LEFT JOIN `{{ project_id }}.{{ pre_deid_dataset }}.{{ mapping_table }}` m on d.input_zip = m.old_zip
+LEFT JOIN (SELECT old_zip, new_zip FROM zip, UNNEST(zip.col)) m on d.input_zip = m.old_zip
 """
 
 QUERY_SUPPRESSED_FREE_TEXT_RESPONSE = """
