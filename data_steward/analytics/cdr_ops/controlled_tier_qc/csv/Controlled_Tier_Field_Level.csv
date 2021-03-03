@@ -2,7 +2,6 @@ table_name,column_name,data_type,is_nullable,is_suppressed,rule
 observation,value_as_string,STRING,YES,YES,DC-1370
 visit_occurrence,admitting_source_value,STRING,YES,YES,DC-1370
 visit_occurrence,discharge_to_source_value,STRING,YES,YES,DC-1370
-heart_rate_summary,zone_name,STRING,YES,YES,DC-1370
 drug_strength,invalid_reason,STRING,YES,YES,DC-1370
 domain,domain_name,STRING,NO,YES,DC-1370
 provider,provider_name,STRING,YES,YES,DC-1370
@@ -91,7 +90,6 @@ measurement,value_as_concept_id,INT64,YES,,DC-1368
 measurement,unit_concept_id,INT64,YES,,DC-1368
 measurement,measurement_source_concept_id,INT64,YES,,DC-1368
 visit_cost,currency_concept_id,INT64,YES,,DC-1368
-domain,domain_concept_id,INT64,NO,,DC-1368
 provider,specialty_concept_id,INT64,YES,,DC-1368
 provider,gender_concept_id,INT64,YES,,DC-1368
 provider,specialty_source_concept_id,INT64,YES,,DC-1368
