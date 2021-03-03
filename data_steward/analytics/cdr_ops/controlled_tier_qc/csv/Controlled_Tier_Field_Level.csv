@@ -227,3 +227,10 @@ cost,currency_concept_id,INT64,YES,,DC-1382
 cost,revenue_code_concept_id,INT64,YES,,DC-1382
 dose_era,drug_concept_id,INT64,NO,,DC-1382
 dose_era,unit_concept_id,INT64,NO,,DC-1382
+observation,observation_concept_id,INT64,NO,,DC-1388
+observation,observation_type_concept_id,INT64,NO,,DC-1388
+observation,value_as_concept_id,INT64,YES,,DC-1388
+observation,qualifier_concept_id,INT64,YES,,DC-1388
+observation,unit_concept_id,INT64,YES,,DC-1388
+observation,observation_source_concept_id,INT64,YES,,DC-1388
+observation,value_source_concept_id,INT64,YES,,DC-1388
