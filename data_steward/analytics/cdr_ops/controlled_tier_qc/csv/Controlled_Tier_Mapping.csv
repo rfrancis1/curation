@@ -17,3 +17,5 @@ dose_era,person_id,INT64,dose_era_id,_deid_map,research_id,DC-1346
 observation,questionnaire_response_id,INT64,observation_id,_deid_questionnaire_response_map,research_response_id,DC-1348
 observation,value_as_string,STRING,observation_id,_zip_map,,DC-1377
 observation,value_as_number,INT64,observation_id,_zip_map,,DC-1377
+observation,value_as_string,STRING,observation_id,,,DC-1380
+observation,value_as_number,INT64,observation_id,,,DC-1380
