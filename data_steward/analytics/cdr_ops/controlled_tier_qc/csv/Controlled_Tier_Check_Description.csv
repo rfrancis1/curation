@@ -13,4 +13,4 @@ DC-1368,Field,check_vehicle_accident_suppression,Verify Motor Vehicle Accident r
 DC-1373,Field,check_field_suppression,Verify identifying field suppression works
 DC-1380,Mapping,check_mapping_zipcode_transformation,Verify generalized zip code values are aggregated
 DC-1382,Field,check_field_cancer_concept_suppression,Verify record suppression of some cancer condition concepts
-DC-1388,,,
+DC-1388,Field,check_field_freetext_response_suppre,Verify Free text survey response records are suppressed
