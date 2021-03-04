@@ -9,7 +9,8 @@ pre_deid_dataset = "R2020Q4R2"
 
 from code.controlled_tier_qc import run_qc, display_check_summary_by_rule, display_check_detail_of_rule
 
-to_include = ['DC-1368']
+to_include = ['DC-1370', 'DC-1377', 'DC-1357', 'DC-1359', 'DC-1362', 'DC-1364', 'DC-1366', 'DC-1368', 'DC-1373',
+            'DC-1380', 'DC-1382', 'DC-1388']
 checks = run_qc(project_id, post_deid_dataset, pre_deid_dataset, rule_code=to_include)
 
 
