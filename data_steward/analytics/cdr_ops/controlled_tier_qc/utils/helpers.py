@@ -143,9 +143,7 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
                 table_name=row['table_name'],column_name=column_name,
                 concept_id=concept_id, concept_code=concept_code, data_type=data_type,
                 primary_key=primary_key, new_id=new_id, mapping_table=mapping_table)
-        print(query)
         result_df = pd.read_gbq(query)
-        print(result_df)
         results.append(result_df)
 
     results_df = (pd.concat(results)
