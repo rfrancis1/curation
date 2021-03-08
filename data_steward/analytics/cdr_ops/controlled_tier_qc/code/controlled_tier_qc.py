@@ -46,6 +46,7 @@ def display_check_summary_by_rule(checks_df):
         by_rule = by_rule.merge(check_description, how='inner', on='rule')
     else:
         by_rule = check_description.copy()
+        by_rule['n_row_violation'] = 0
     by_rule['n_row_violation'] = by_rule['n_row_violation'].fillna(0).astype(int)
     return by_rule.style.apply(highlight, axis=1)
 
