@@ -143,10 +143,10 @@ def run_check_by_row(df, template_query, project_id, post_deid_dataset, pre_deid
                 table_name=row['table_name'],column_name=column_name,
                 concept_id=concept_id, concept_code=concept_code, data_type=data_type,
                 primary_key=primary_key, new_id=new_id, mapping_table=mapping_table)
-        result_df = pd.read_gbq(query)
+        result_df = pd.read_gbq(query, dialect="standard")
         results.append(result_df)
 
-    results_df = (pd.concat(results)
+    results_df = (pd.concat(results, sort=True)
                     .pipe(format_cols_to_string))
     merge_cols = get_list_of_common_columns_for_merge(check_df, results_df)
     result_columns = merge_cols + ['rule', 'n_row_violation']
