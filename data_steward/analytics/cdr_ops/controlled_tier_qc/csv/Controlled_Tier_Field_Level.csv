@@ -102,7 +102,6 @@ person,race_source_concept_id,INT64,YES,,DC-1368
 person,ethnicity_source_concept_id,INT64,YES,,DC-1368
 person,sex_at_birth_concept_id,INT64,YES,,DC-1368
 person,sex_at_birth_source_concept_id,INT64,YES,,DC-1368
-person,state_of_residence_concept_id,INT64,YES,,DC-1368
 drug_cost,currency_concept_id,INT64,YES,,DC-1368
 cohort_attribute,value_as_concept_id,INT64,YES,,DC-1368
 procedure_occurrence,procedure_concept_id,INT64,NO,,DC-1368
@@ -185,7 +184,6 @@ person,race_source_concept_id,INT64,YES,,DC-1382
 person,ethnicity_source_concept_id,INT64,YES,,DC-1382
 person,sex_at_birth_concept_id,INT64,YES,,DC-1382
 person,sex_at_birth_source_concept_id,INT64,YES,,DC-1382
-person,state_of_residence_concept_id,INT64,YES,,DC-1382
 drug_cost,currency_concept_id,INT64,YES,,DC-1382
 cohort_attribute,value_as_concept_id,INT64,YES,,DC-1382
 procedure_occurrence,procedure_concept_id,INT64,NO,,DC-1382
